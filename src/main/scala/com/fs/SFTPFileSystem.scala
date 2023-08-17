@@ -63,7 +63,6 @@ class SFTPFileSystem(config: SFTPSourceConfig)
    */
   override def openInputStream(path: String): InputStream = {
     val sftpFileUrl = s"$sftpUrl$path"
-    val fs: FileObject = fsManager.resolveFile(sftpFileUrl, createDefaultOptions)
     fsManager.resolveFile(sftpFileUrl, createDefaultOptions).getContent.getInputStream
   }
 
