@@ -1,0 +1,16 @@
+{
+  "hl7": {
+    "sourceType": "sftp",
+    "sourceInfo": {
+      "host": "localhost",
+      "port": "9922",
+      "username": "username",
+      "password": "password"
+    },
+    "options": {
+      "hl7schema": "H4sIAAAAAAAAAI1U226bQBD9Av/DPlXtA87ucvM+UvBNtgkF4jhVNRUxqwbJxi2XqKlW+fbOgt04blR1hMSymnP2zJlZVslMwfOXdwpArTyKgQt8pqc1pwyD2oxz27SVipMIFowBvr/iWzGTU5szZtpCOENG++AqVXxoD5k6xWeTgx/40WwerhPkHawST3meYkK4SMCnnkWVGnzyFl2yBbH80cq6IfP9vi2LX1lTHEoyK+rmUD3BbOlSy2WYHwX/n/1yFsVKJsvruwAmsRcuQMcSDVjOJ3N/HKJ4Sk3KuKlWaqkG0TxQWAq3dV4SP2OF7C2Cc5hSDuMkIbfxfDpLiZ8CLMZhOL6d+wu49RI0YppehyCE6ThwUxaNzEnSZI2sAdHvbSo+WJwZ1LTx2GiGB+AW4Fa3oy4jRJmB9rvTgioVZ7Dy0hSSmbe4g17jsQDmuMLBtumOdkE5WrgvylxWV5XcZrsdMbLyiexl83DIOwc565M98LZN8Sh7Wy1sQrhAb492nHk4jQOYtlmVF1nZJVPHRJFrFBmrwXXsq3isTR2a1hDHjFIXjRvEG09RJYTQo8dxz2WMM4tffgoxgvJAHrPttiglyXJUj/2WlczBX2+Q4yJe4S0U8HGDqv2xMqmwHcOFE1Xz9F3CMkRTIEijqyzq+LqYnMFs4brCEPBq5JLtg8zbnSRtjTo0yXrjMwc8fx69zP8FWbjSGlzT4BAcaknKdn8vK1KUpJZVgfOgeawLUJpo0Iii8ACH5mhEryJv+wJ0yVi08zaUGTaMs2pX6IuTa47mQL7pzv4bqwt3DROWelaPyFL+xJUWXz8c2l1O7mVHVZ64HPyJsLe5RgbrS+jwRU0Oj7I6KwFv1F8yev9HJkL1nWlr7VZx3okz627g5ruuTR8CSep3P6g/fMc5FHrkfgMI1WIODwUAAA==",
+      "hl7version": "2.5",
+      "path": "/foo-home/hl7/501"
+    }
+  }
+}
