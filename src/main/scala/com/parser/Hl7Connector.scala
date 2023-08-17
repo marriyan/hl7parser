@@ -13,16 +13,16 @@ import java.util.UUID
 
 trait Hl7Connector {
 
-  private[com] def copyOperation(spark: SparkSession,
-                            srcPath: String,
-                            sourceType: Option[String] = Option.empty[String],
-                            sourceSystem: Option[Map[String, String]]): Option[String] = {
+  private[com] def copyOperation( spark : SparkSession,
+                                  srcPath : String,
+                                  sourceType : Option[String] = Option.empty[String],
+                                  sourceSystem : Option[Map[String, String]] ) : Option[String] = {
     (sourceType, sourceSystem) match {
       case (Some(srcType), Some(sourceSys))
         if srcType.equalsIgnoreCase("sftp") =>
         Some(sftpToHdfsCopyActivity(spark.sparkContext.hadoopConfiguration,
           srcPath, sourceSys))
-      case (Some(srcType), Some(sourceSys)) if List("local","hdfs","s3","blob","adls").contains(srcType.toLowerCase) =>
+      case (Some(srcType), Some(sourceSys)) if List("local", "hdfs", "s3", "blob", "adls").contains(srcType.toLowerCase) =>
         val config = spark.sparkContext.hadoopConfiguration
         sourceSys.foreach(f => {
           config.set(f._1, f._2)
@@ -33,8 +33,8 @@ trait Hl7Connector {
     }
   }
 
-  private[com] def sftpToHdfsCopyActivity(conf: Configuration, sourcePath: String,
-                                     options: Map[String, String]): String = {
+  private[com] def sftpToHdfsCopyActivity( conf : Configuration, sourcePath : String,
+                                           options : Map[String, String] ) : String = {
     val username = options.getOrElse("username",
       throw ParamMissingException("username: parameter missing"))
     val password = options.getOrElse("password",
@@ -61,11 +61,11 @@ trait Hl7Connector {
    * @param schema  - Custom Schema
    * @return
    */
-  def readData(spark: SparkSession,
-               options: Map[String, String],
-               sourceType: Option[String] = Option.empty[String],
-               sourceSystem: Option[Map[String, String]] = Option.empty,
-               schema: Option[StructType] = Option.empty[StructType]): DataFrame = {
+  def readData( spark : SparkSession,
+                options : Map[String, String],
+                sourceType : Option[String] = Option.empty[String],
+                sourceSystem : Option[Map[String, String]] = Option.empty,
+                schema : Option[StructType] = Option.empty[StructType] ) : DataFrame = {
     val srcPath = options.getOrElse("path",
       throw ParamMissingException("path: parameter missing"))
     val updatedOptions = copyOperation(spark, srcPath,
@@ -74,11 +74,12 @@ trait Hl7Connector {
         ("path" -> x)
       case None => options
     }
-    val hl7Schema: Option[Hl7Schema] = options.get("hl7schema") match {
+    val hl7Schema : Option[Hl7Schema] = options.get("hl7schema") match {
       case Some(hl7schema) =>
         Some(Hl7Schema(options.getOrElse("hl7version", "2.5"),
           CompressionUtil.decompress(hl7schema)))
-      case None if schema.isEmpty =>
+      case None if schema.isDefined => None
+      case None =>
         throw SchemaFilePathMissingException("hl7schema: parameter Missing.")
     }
     import com.parser.source.hl7.implicits._

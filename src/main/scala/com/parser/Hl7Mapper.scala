@@ -4,20 +4,21 @@ import com.fasterxml.jackson.databind.node.JsonNodeType
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.parser.exeptions.MappingJsonFileMissingException
 import com.parser.util.CompressionUtil
+import org.apache.spark.internal.Logging
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.{ArrayType, StructType}
 
 import scala.collection.JavaConverters._
 
 
-trait Hl7Mapper {
+trait Hl7Mapper extends Logging {
 
-  private def getColumnNamesWithDotNotation(schema: StructType,
-                                            parentName: String = ""): Seq[String] = {
+  private def getColumnNamesWithDotNotation( schema : StructType,
+                                             parentName : String = "" ) : Seq[String] = {
     schema.fields.flatMap { field =>
       val columnName = if (parentName.isEmpty) field.name else s"$parentName.${field.name}"
       field.dataType match {
-        case structType: StructType =>
+        case structType : StructType =>
           getColumnNamesWithDotNotation(structType, columnName)
         case ArrayType(elementType, _) if elementType.isInstanceOf[StructType] =>
           getColumnNamesWithDotNotation(elementType.asInstanceOf[StructType], columnName)
@@ -27,14 +28,14 @@ trait Hl7Mapper {
     }
   }
 
-  private def getSparkColumns(value: String): Set[String] = {
+  private def getSparkColumns( value : String ) : Set[String] = {
     val rx = "\\[(.*?)\\]".r
     val results = rx.findAllMatchIn(value).map(_ group 1)
     results.toSet
   }
 
-  private def convertJsonToStruct(node: JsonNode,
-                                  columns: Seq[String]): String = node.getNodeType match {
+  private def convertJsonToStruct( node : JsonNode,
+                                   columns : Seq[String] ) : String = node.getNodeType match {
     case JsonNodeType.OBJECT =>
       val structFields = node.fields.asScala.map { entry =>
         s"'${entry.getKey}', ${convertJsonToStruct(entry.getValue, columns)}"
@@ -48,7 +49,7 @@ trait Hl7Mapper {
     case JsonNodeType.STRING =>
       val sparkColumns = getSparkColumns(node.asText())
       if (sparkColumns.nonEmpty) {
-        sparkColumns.foldLeft(node.asText()) { (acc, elem) =>
+        sparkColumns.foldLeft(node.asText()) { ( acc, elem ) =>
           acc.replaceAll(elem, if (columns.contains(elem)) elem else "null")
         }.replaceAll("\\[|\\]", "")
       } else {
@@ -58,17 +59,19 @@ trait Hl7Mapper {
     case _ => "null"
   }
 
-  private def parseJson(jsonString: String): JsonNode = {
+  private def parseJson( jsonString : String ) : JsonNode = {
     val objectMapper = new ObjectMapper()
     objectMapper.readTree(jsonString)
   }
 
-  def transform(df: DataFrame,
-                conf: Map[String, String]): DataFrame = {
+  def transform( df : DataFrame,
+                 conf : Map[String, String] ) : DataFrame = {
     val mappingJson = conf.getOrElse("mappingJson",
       throw MappingJsonFileMissingException("mappingJson config missing."))
     val columns = getColumnNamesWithDotNotation(df.schema)
+    val deCompressedMappingJson = CompressionUtil.decompress(mappingJson)
+    log.info(s"HL7 deCompressedMappingJson: $deCompressedMappingJson")
     df.selectExpr(
-      s"to_json(${convertJsonToStruct(parseJson(CompressionUtil.decompress(mappingJson)), columns)}) as value")
+      s"to_json(${convertJsonToStruct(parseJson(deCompressedMappingJson), columns)}) as value")
   }
 }
