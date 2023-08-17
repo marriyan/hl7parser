@@ -1,8 +1,8 @@
 # Spark-based Generic HL7 Parser
-## POC Introduction:
+## Introduction:
 The purpose of this POC is to develop a Spark-based generic HL7 parser that can support parsing HL7 messages in any format and convert the parsed data into a user-specified JSON format. This solution will enable healthcare organizations to efficiently process and extract valuable insights from HL7 data by leveraging the power of Apache Spark.
 
-## POC Scope:
+##  Scope:
 The parser will support parsing HL7 messages of various formats, including HL7 v2.x. The solution will be implemented using Apache Spark, utilizing its distributed processing capabilities for handling large volumes of HL7 data.
 
 ## Functional Requirements:
